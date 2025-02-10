@@ -2,7 +2,7 @@ import { useState } from "react";
 import { allCountries } from "country-telephone-data";
 
 // Definición del componente FormularioRegistro
-FormularioRegistro = () => {
+const FormularioRegistro = () => {
   // Estado para almacenar los datos del formulario
   const [formData, setFormData] = useState({
     razonSocial: "",
@@ -20,9 +20,9 @@ FormularioRegistro = () => {
   const validate = () => {
     let newErrors = {};
 
-    // Validación de Razón Social (solo letras, números y espacios)
-    if (!/^[a-zA-Z0-9\s]+$/.test(formData.razonSocial)) {
-      newErrors.razonSocial = "La razón social solo puede contener letras, números y espacios.";
+    // Validación de Razón Social (solo letras, números, espacios y puntos)
+    if (!/^[a-zA-Z0-9\s.]+$/.test(formData.razonSocial)) {
+      newErrors.razonSocial = "La razón social solo puede contener letras, números, espacios y puntos.";
     }
 
     // Validación de RFC (12 caracteres alfanuméricos para empresas)
@@ -67,7 +67,7 @@ FormularioRegistro = () => {
   // Renderiza el formulario
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-2xl mt-16">
-      <h2 className="text-2xl font-bold mb-4">Registro de Empresa</h2>
+      <h2 className="text-2xl font-bold mb-4 w-full text-center">Registro de Empresa</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block font-medium">Razón Social</label>
@@ -80,27 +80,42 @@ FormularioRegistro = () => {
           />
           {errors.razonSocial && <p className="text-red-500 text-sm">{errors.razonSocial}</p>}
         </div>
-        <div>
-          <label className="block font-medium">RFC</label>
-          <input
-            type="text"
-            name="rfc"
-            value={formData.rfc}
-            onChange={handleChange}
-            className={`w-full p-2 border rounded-lg ${errors.rfc ? "border-red-500" : "border-gray-300"}`}
-          />
-          {errors.rfc && <p className="text-red-500 text-sm">{errors.rfc}</p>}
-        </div>
-        <div>
-          <label className="block font-medium">Teléfono</label>
-          <input
-            type="text"
-            name="telefono"
-            value={formData.telefono}
-            onChange={handleChange}
-            className={`w-full p-2 border rounded-lg ${errors.telefono ? "border-red-500" : "border-gray-300"}`}
-          />
-          {errors.telefono && <p className="text-red-500 text-sm">{errors.telefono}</p>}
+        <div className="flex space-x-4">
+          <div>
+            <label className="block font-medium">RFC</label>
+            <input
+              type="text"
+              name="rfc"
+              value={formData.rfc}
+              onChange={handleChange}
+              className={`w-full p-2 border rounded-lg ${errors.rfc ? "border-red-500" : "border-gray-300"}`}
+            />
+            {errors.rfc && <p className="text-red-500 text-sm">{errors.rfc}</p>}
+          </div>
+          <div className="flex-1 w-auto">
+            <label className="block font-medium">Teléfono</label>
+            <div className="flex ">
+              <select
+                name="codigoPais"
+                value={formData.codigoPais}
+                onChange={handleChange}
+                className="w-auto border rounded-l-lg border-gray-300"
+              >
+                <option value="">+...</option>
+                {allCountries.map(({ dialCode }) => (
+                  <option key={dialCode} value={`+${dialCode}`}>(+{dialCode})</option>
+                ))}
+              </select>
+              <input
+                type="text"
+                name="telefono"
+                value={formData.telefono}
+                onChange={handleChange}
+                className={`w-full p-2 border rounded-r-lg ${errors.telefono ? "border-red-500" : "border-gray-300"}`}
+              />
+              {errors.telefono && <p className="text-red-500 text-sm">{errors.telefono}</p>}
+            </div>
+          </div>
         </div>
         <div>
           <label className="block font-medium">Nombre de Contacto</label>
@@ -124,27 +139,15 @@ FormularioRegistro = () => {
           />
           {errors.correo && <p className="text-red-500 text-sm">{errors.correo}</p>}
         </div>
-        <div>
-          <label className="block font-medium">Código de País</label>
-          <select
-            name="codigoPais"
-            value={formData.codigoPais}
-            onChange={handleChange}
-            className="w-full p-2 border rounded-lg border-gray-300"
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={Object.values(formData).some(val => val === "")}
+            className=" p-2 bg-lime-400 text-white rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed cursor-pointer"
           >
-            <option value="">Seleccione un país</option>
-            {allCountries.map(({ name, dialCode }) => (
-              <option key={dialCode} value={`+${dialCode}`}>{name} (+{dialCode})</option>
-            ))}
-          </select>
+            Registrar
+          </button>
         </div>
-        <button
-          type="submit"
-          disabled={ Object.values(formData).some(val => val === "")}
-          className="w-full p-2 bg-blue-500 text-white rounded-lg disabled:bg-gray-400"
-        >
-          Registrar
-        </button>
       </form>
     </div>
   );
